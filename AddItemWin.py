@@ -98,4 +98,8 @@ class AddItemWin(Tk):
 
         self.cursor.execute("INSERT INTO %(third)s%(first)s VALUES %(second)s" % {"first": self.strTemp, "second": self.strTemp2, "third": self.nameOfTable})
         self.connect.commit()
+        self.cursor.execute("INSERT INTO %(third)s%(first)s VALUES %(second)s" % {"first": self.strTemp, "second": self.strTemp2, "third": "Dob"})
+        self.connect.commit()
+        self.temp = f"{self.cursor.execute(f"SELECT id FROM Dob ORDER BY id desc").fetchone()[0] + 1}"
+        self.cursor.execute(f"UPDATE Dob SET id = {self.temp} WHERE id = {self.cursor.execute(f"SELECT id FROM Dob ORDER BY id desc").fetchone()[0]}")
         self.destroy()

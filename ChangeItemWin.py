@@ -9,7 +9,7 @@ from tkinter.messagebox import showwarning
 from MainWindow import *
 
 
-class ChangeWorkerWin(Tk):
+class ChangeItemWin(Tk):
 
     textFromTextBox=""
 
@@ -18,14 +18,15 @@ class ChangeWorkerWin(Tk):
 
         self.connect = DataFile.connectMain
         self.cursor = self.connect.cursor()
+
         self.entrysList = list()
         self.LabelList = list()
         self.selectedProjectsList = MainWindow.MainWindow.selectedProjectsList
         self.columns = tuple()
-        for x in range(self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('Workers')").fetchone()[0]):
-            self.columns += self.cursor.execute(f"SELECT name FROM pragma_table_info('Workers') Where cid={x}").fetchone()
+        for x in range(self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('Main')").fetchone()[0]):
+            self.columns += self.cursor.execute(f"SELECT name FROM pragma_table_info('Main') Where cid={x}").fetchone()
 
-        self.title("Изменить работника")
+        self.title("Изменить наименование")
         self.geometry("800x700")
 
 
@@ -55,7 +56,7 @@ class ChangeWorkerWin(Tk):
 
         params.append(self.selectedProjectsList[0])
 
-        query = f"UPDATE Workers SET {', '.join(updates)} WHERE ID = ?"
+        query = f"UPDATE Main SET {', '.join(updates)} WHERE ID = ?"
 
         self.cursor.execute(query, params)
         self.connect.commit()

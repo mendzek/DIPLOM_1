@@ -18,9 +18,9 @@ class MenuWindow(Tk):
         self.BT1.grid(row=0, column=0, pady=30, padx=30)
         self.BT2 = ttk.Button(self, text="Управление товарами", width=40, command=self.Button2)
         self.BT2.grid(row=0, column=1, pady=30, padx=30)
-        self.BT3 = ttk.Button(self, text="Создать отчет по работникам", width=40, command=self.Button3)
+        self.BT3 = ttk.Button(self, text="Просмотр списаний", width=40, command=self.Button3)
         self.BT3.grid(row=1, column=0, pady=30, padx=30)
-        self.BT4 = ttk.Button(self, text="Создать отчет по товарам", width=40, command=self.Button4)
+        self.BT4 = ttk.Button(self, text="Просмотр поступлений", width=40, command=self.Button4)
         self.BT4.grid(row=1, column=1, pady=30, padx=30)
 
         sv_ttk.set_theme("dark", self)
@@ -33,7 +33,7 @@ class MenuWindow(Tk):
         mainWindow.OpenMainTable()
     def Button3(self):
         mainWindow = MainWindow()
-        mainWindow.CreateDocxWorkers()
+        mainWindow.OpenSpisTable()
     def Button4(self):
         mainWindow = MainWindow()
-        mainWindow.CreateDocxMain()
+        mainWindow.OpenDobTable()

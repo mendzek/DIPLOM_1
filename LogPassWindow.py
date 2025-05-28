@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import ttk
 import sv_ttk
 from tkinter.messagebox import showwarning
+import MainWindow
+from MainWindow import *
 import DataFile
 from MenuWindow import MenuWindow
 from RegistrationWindow import RegistrationWindow
