@@ -40,6 +40,7 @@ class ChangeWorkerWin(Tk):
 
         self.BT_save = ttk.Button(self, text="Сохранить", command=self.BT_save)
         self.BT_save.pack(expand=1,side=BOTTOM)
+        sv_ttk.set_theme("dark", self)
 
     def BT_save(self):
         self.cursor = self.connect.cursor()

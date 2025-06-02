@@ -6,6 +6,8 @@ import MainWindow
 from MainWindow import *
 import DataFile
 from MenuWindow import MenuWindow
+from MainWin import *
+import MainWin
 from RegistrationWindow import RegistrationWindow
 
 
@@ -46,13 +48,11 @@ class LogPassWindow(Tk):
 
         if LogPassBool:
             print("nice")
-            menuWindow = MenuWindow()
+            mainWin = MainWin.MainWin()
+            self.destroy()
         else:
             print("not nice")
             showwarning(title="Ошибка", message="Неверный логин или пароль, попробуйте снова")
-
-    def Register(self):
-        registrationWindow = RegistrationWindow()
 
     def ForgotPassword(self):
         pass
