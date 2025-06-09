@@ -38,8 +38,16 @@ class MainWin(Tk):
         self.tabFrame = ttk.Frame(self.mainFrame)
         self.tabFrame.pack(fill='x', pady=(0, 5))
 
+        self.buttonFrame = ttk.Frame(self.mainFrame)
+        self.buttonFrame.pack(fill="x", padx=10, pady=10)
+
+        self.vertFrame = ttk.Frame(self.mainFrame)
+        self.vertFrame.pack(fill="y", expand=True, padx=10, pady=10, anchor=E)
+
         self.contentFrame = ttk.Frame(self.mainFrame)
-        self.contentFrame.pack(fill='both', expand=True, padx=10, pady=10)
+        self.contentFrame.pack(fill='y', expand=True, padx=10, pady=10, anchor=W)
+
+
 
         self.notebook = ttk.Notebook(self.tabFrame)
         self.notebook.pack(expand=True, fill="both")
@@ -66,19 +74,19 @@ class MainWin(Tk):
     def OpenMainTable(self):
         self.CleanWindow()
 
-        self.BTaddItem = ttk.Button(self.contentFrame, text="Добавить наименование", width=20, command=self.AddItem)
-        self.BTaddItem.pack(anchor=W, expand=1)
+        self.BTaddItem = ttk.Button(self.buttonFrame, text="Добавить наименование", width=20, command=self.AddItem)
+        self.BTaddItem.pack(side="left", pady=5,padx=5)
 
-        self.BTchangeItem = ttk.Button(self.contentFrame, text="Редактировать наименование", width=20,
-                                       command=self.ChangeItem)
-        self.BTchangeItem.pack(anchor=W, expand=1)
+        self.BTchangeItem = ttk.Button(self.buttonFrame, text="Редактировать наименование", width=20, command=self.ChangeItem)
+        self.BTchangeItem.pack(side="left", pady=5,padx=5)
 
-        self.BTdeleteItem = ttk.Button(self.contentFrame, text="Удалить наименование", width=20, command=self.DeleteItem)
-        self.BTdeleteItem.pack(anchor=W, expand=1)
+        self.BTdeleteItem = ttk.Button(self.buttonFrame, text="Удалить наименование", width=20, command=self.DeleteItem)
+        self.BTdeleteItem.pack(side="left", pady=5,padx=5)
 
-        self.BTtabsCreateDocxMain = ttk.Button(self.contentFrame, text="Создать отчет по выбранным наименованиям",
-                                               width=20, command=self.CreateDocxMain)
-        self.BTtabsCreateDocxMain.pack(anchor=W, expand=1)
+        self.BTtabsCreateDocxMain = ttk.Button(self.buttonFrame, text="Создать отчет по выбранным наименованиям", width=20, command=self.CreateDocxMain)
+        self.BTtabsCreateDocxMain.pack(side="left", pady=5,padx=5)
+
+
 
         self.connect = DataFile.connectMain
         self.cursor = self.connect.cursor()
@@ -116,57 +124,83 @@ class MainWin(Tk):
                 pass
 
         self.tableName = "main"
+
+        #vsb = ttk.Scrollbar(self.contentFrame, orient="vertical", command=self.tree.yview)
+        #self.tree.configure(yscrollcommand=vsb.set)
+
+        #hsb = ttk.Scrollbar(self.contentFrame, orient="horizontal", command=self.tree.xview)
+        #self.tree.configure(xscrollcommand=hsb.set)
+
+        #vsb.pack()
+        #hsb.pack()
+
+        for x in range(self.numOfColumns):
+            self.tree.column(x, stretch = True, minwidth = 100)
+
     def OpenWorkers(self):
         self.CleanWindow()
 
-        self.BTaddWorker = ttk.Button(self.contentFrame, text="Добавить работника", width=20, command=self.AddWorker)
-        self.BTaddWorker.pack(anchor=W, expand=1)
+        # Кнопки (горизонтальное расположение)
+        self.BTaddWorker = ttk.Button(self.buttonFrame, text="Добавить работника", width=20, command=self.AddWorker)
+        self.BTaddWorker.pack(side="left", padx=5)
 
-        self.BTchangeWorker = ttk.Button(self.contentFrame, text="Редактировать работника", width=20, command=self.ChangeWorker)
-        self.BTchangeWorker.pack(anchor=W, expand=1)
+        self.BTchangeWorker = ttk.Button(self.buttonFrame, text="Редактировать работника", width=20,
+                                         command=self.ChangeWorker)
+        self.BTchangeWorker.pack(side="left", padx=5)
 
-        self.BTdeleteWorker = ttk.Button(self.contentFrame, text="Удалить работника", width=20, command=self.DeleteWorker)
-        self.BTdeleteWorker.pack(anchor=W, expand=1)
+        self.BTdeleteWorker = ttk.Button(self.buttonFrame, text="Удалить работника", width=20,
+                                         command=self.DeleteWorker)
+        self.BTdeleteWorker.pack(side="left", padx=5)
 
-        self.BTtabsCreateDocxWorkers = ttk.Button(self.contentFrame, text="Создать отчет", width=20, command=self.CreateDocxWorkers)
-        self.BTtabsCreateDocxWorkers.pack(anchor=W, expand=1)
+        self.BTtabsCreateDocxWorkers = ttk.Button(self.buttonFrame, text="Создать отчет", width=20,
+                                                  command=self.CreateDocxWorkers)
+        self.BTtabsCreateDocxWorkers.pack(side="left", padx=5)
 
+        # Подключение к БД
         self.connect = DataFile.connectMain
         self.cursor = self.connect.cursor()
-        self.columns = ()
-        self.cursor.execute(f"SELECT COUNT(*) FROM Workers")
-        self.numOfRows = self.cursor.fetchone()[0]
-        self.numOfColumns = \
-            self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('Workers')").fetchone()[0]
-        for x in range(self.numOfColumns):
-            self.columns += self.cursor.execute(
-                f"SELECT name FROM pragma_table_info('Workers') Where cid={x}").fetchone()
-        self.tree = ttk.Treeview(self.contentFrame, columns=self.columns, show="headings")
-        self.tree.pack(anchor=S, fill=BOTH, expand=1)
-        for x in self.columns:
-            self.tree.heading(x, text=x)
+
+        # Получаем названия столбцов
+        self.cursor.execute("SELECT name FROM pragma_table_info('Workers')")
+        self.columns = [col[0] for col in self.cursor.fetchall()]
+
+        # Создаем контейнер для Treeview и скроллбаров
+        tree_container = ttk.Frame(self.contentFrame)
+        tree_container.pack(fill="both", expand=True)
+
+        # Treeview
+        self.tree = ttk.Treeview(tree_container, columns=self.columns, show="headings")
+
+        # Вертикальный скроллбар (всегда справа)
+        vsb = ttk.Scrollbar(tree_container, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=vsb.set)
+
+        # Горизонтальный скроллбар (внизу)
+        hsb = ttk.Scrollbar(tree_container, orient="horizontal", command=self.tree.xview)
+        self.tree.configure(xscrollcommand=hsb.set)
+
+        # Размещаем элементы с помощью grid
+        self.tree.grid(row=0, column=0, sticky="nsew")
+        vsb.grid(row=0, column=1, sticky="ns")
+        hsb.grid(row=1, column=0, sticky="ew")
+
+        # Настройка растягивания
+        tree_container.grid_rowconfigure(0, weight=1)
+        tree_container.grid_columnconfigure(0, weight=1)
+
+        # Заголовки столбцов
+        for col in self.columns:
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=100, stretch=True, minwidth=50)
+
+        # Загрузка данных
+        self.cursor.execute("SELECT * FROM Workers")
+        for row in self.cursor.fetchall():
+            self.tree.insert("", "end", values=row)
 
         self.tree.bind("<<TreeviewSelect>>", self.select)
-
-        for x in self.tree.get_children():
-            self.tree.delete(x)
-
-        self.checkTemp = False
-        self.tableValues.clear()
-
-        for x in range(self.numOfRows + 1):
-            self.cursor.execute(f"SELECT * FROM Workers WHERE id={x}")
-            if self.checkTemp == False:
-                self.checkTemp = True
-            else:
-                self.tableValues.append(self.cursor.fetchone())
-        for x in self.tableValues:
-            try:
-                self.tree.insert("", END, values=x)
-            except:
-                pass
-
         self.tableName = "workers"
+
     def OpenSpisTable(self):
         self.CleanWindow()
 
@@ -249,6 +283,9 @@ class MainWin(Tk):
         for widgets in self.contentFrame.winfo_children():
             widgets.destroy()
 
+        for widgets in self.buttonFrame.winfo_children():
+            widgets.destroy()
+
     def AddItem(self):
         addItemWin = AddItemWin()
     def ChangeItem(self):
@@ -257,18 +294,15 @@ class MainWin(Tk):
     def DeleteItem(self):
         self.connect = DataFile.connectMain
         self.cursor = self.connect.cursor()
-        if (len(self.selectedProjectsList) == 0):
-            self.label["text"] = "Ничего не выбрано"
-        else:
-            self.cursor.execute("INSERT INTO Spis VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (self.selectedProjectsList[0], self.selectedProjectsList[1], self.selectedProjectsList[2], self.selectedProjectsList[3], self.selectedProjectsList[4], self.selectedProjectsList[5], self.selectedProjectsList[6], self.selectedProjectsList[7], self.selectedProjectsList[8]))
-            self.connect.commit()
-            self.temp = f"{self.cursor.execute(f"SELECT id FROM Spis ORDER BY id desc").fetchone()[0]+1}"
-            self.cursor.execute(f"UPDATE Spis SET id = {self.temp} WHERE id = {self.selectedProjectsList[0]}")
-            self.connect.commit()
-            self.cursor.execute(
-                f"DELETE FROM Main WHERE ID = %(first)s" % {"first": self.selectedProjectsList[0]})
-            self.connect.commit()
-            self.OpenMainTable()
+        self.cursor.execute("INSERT INTO Spis VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (self.selectedProjectsList[0], self.selectedProjectsList[1], self.selectedProjectsList[2], self.selectedProjectsList[3], self.selectedProjectsList[4], self.selectedProjectsList[5], self.selectedProjectsList[6], self.selectedProjectsList[7], self.selectedProjectsList[8]))
+        self.connect.commit()
+        self.temp = f"{self.cursor.execute(f"SELECT id FROM Spis ORDER BY id desc").fetchone()[0]+1}"
+        self.cursor.execute(f"UPDATE Spis SET id = {self.temp} WHERE id = {self.selectedProjectsList[0]}")
+        self.connect.commit()
+        self.cursor.execute(
+            f"DELETE FROM Main WHERE ID = %(first)s" % {"first": self.selectedProjectsList[0]})
+        self.connect.commit()
+        self.OpenMainTable()
 
     def AddWorker(self):
         addWorkerWin = AddWorkerWin()
@@ -278,13 +312,10 @@ class MainWin(Tk):
     def DeleteWorker(self):
         self.connect = DataFile.connectMain
         self.cursor = self.connect.cursor()
-        if (len(self.selectedProjectsList) == 0):
-            self.label["text"] = "Ничего не выбрано"
-        else:
-            self.cursor.execute(
-                f"DELETE FROM Workers WHERE ID = %(first)s" % {"first": self.selectedProjectsList[0]})
-            self.connect.commit()
-            self.OpenWorkers()
+        self.cursor.execute(
+            f"DELETE FROM Workers WHERE ID = %(first)s" % {"first": self.selectedProjectsList[0]})
+        self.connect.commit()
+        self.OpenWorkers()
 
     def CreateDocxWorkers(self):
         doc = DocxTemplate("workerTemplate.docx")
@@ -369,6 +400,5 @@ class MainWin(Tk):
                     self.project = self.item["values"]
                     self.selectedProjectsList.append(self.item["values"])
                     self.selectedProjects = f"{self.selectedProjects}{self.project}\n"
-        self.label["text"] = self.selectedProjects
         check = True
         print(self.selectedProjects)

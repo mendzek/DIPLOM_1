@@ -58,7 +58,7 @@ class AddItemWin(Tk):
         self.entrysList.append(self.entry9)
 
         self.title("ProgramPython - Добавить наименование")
-        self.geometry("620x600")
+        self.geometry("200x600")
         self.resizable(False, False)
         sv_ttk.set_theme("dark", self)
 

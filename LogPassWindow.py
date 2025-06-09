@@ -20,7 +20,7 @@ class LogPassWindow(Tk):
         self.resizable(False, False)
 
         self.MainLabel = ttk.Label(self, width=30, font=DataFile.BIG_FONT, text="УЧЕТ ХРАНЕНИЯ НА СКЛАДЕ")
-        self.MainLabel.pack(anchor=CENTER, pady=20)
+        self.MainLabel.pack(anchor=CENTER, pady=20, padx=10)
 
         self.EntryLog = ttk.Entry(self, width=15, font=DataFile.REGULAR_FONT, foreground='grey')
         self.EntryLog.insert(0, "Login")
@@ -36,7 +36,7 @@ class LogPassWindow(Tk):
         self.EntryPass.pack(anchor=CENTER)
 
         self.BTLogPassAccept = ttk.Button(self, text="Войти", width=20,  command=self.AcceptLogPass)
-        self.BTLogPassAccept.pack(anchor=CENTER)
+        self.BTLogPassAccept.pack(anchor=CENTER,pady=8)
 
         sv_ttk.set_theme("dark")
 
@@ -49,6 +49,7 @@ class LogPassWindow(Tk):
         if LogPassBool:
             print("nice")
             mainWin = MainWin.MainWin()
+            #mainWin = MainWindow.MainWindow()
             self.destroy()
         else:
             print("not nice")
